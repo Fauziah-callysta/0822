@@ -8,7 +8,7 @@ app.register_blueprint(deploy_bp)
 
 @app.route("/")
 def index():
-    return "<h1>Hi..</h1>"
+    return "Halo, Deployment Otomatis Berhasil!"
 
 
 @app.route("/slug/<teks>")
