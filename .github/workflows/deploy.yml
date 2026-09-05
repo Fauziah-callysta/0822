@@ -1,0 +1,38 @@
+name: CI and Deploy to PythonAnywhere
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v4
+
+      - name: Setup uv & Python
+        uses: astral-sh/setup-uv@v3
+        with:
+          python-version: '3.12'
+          enable-cache: true
+
+      - name: Sync dependency
+        run: uv sync --all-groups
+
+      - name: Lint dengan ruff
+        run: uv run ruff check .
+
+      - name: Jalankan test
+        run: uv run pytest -v
+
+  deploy:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deploy webhook di PythonAnywhere
+        run: |
+          curl -X POST "https://${{ secrets.PA_DOMAIN }}/deploy-webhook" \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: sha256=$(echo -n '{}' | openssl dgst -sha256 -hmac "${{ secrets.WEBHOOK_SECRET }}" | sed 's/^.* //')" \
+            -d '{}'
