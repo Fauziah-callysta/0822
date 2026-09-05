@@ -3,7 +3,7 @@ from flask import Flask
 from utils import rupiah, slugify
 
 app = Flask(__name__)
-app.register_blueprint(deploy_bp)  # Daftarkan blueprint di sini
+app.register_blueprint(deploy_bp)
 
 
 @app.route("/")
